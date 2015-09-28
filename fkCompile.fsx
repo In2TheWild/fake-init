@@ -30,6 +30,18 @@ Target "main.exe" (fun _ ->
 
 "moduleA.dll"
     ==> "moduleB.dll"
-    ==> "Main.exe"
+    ==> "main.exe"
 
-RunTargetOrDefault "main.exe"
+// RunTargetOrDefault "main.exe"
+
+Target "watch" (fun _ ->
+        use watcher =
+            !! "src/fsharp/*.fs"
+            |> WatchChanges (fun changes ->
+                tracefn "%A" changes
+                Run "main.exe" )
+        System.Console.ReadLine() |> ignore 
+        watcher.Dispose()
+)
+
+RunTargetOrDefault  "watch"
